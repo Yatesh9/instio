@@ -1,0 +1,4 @@
+epicsEnvSet("IOC","iocfpgaIOC")
+epicsEnvSet("TOP","/root/epics/IOC/inst/fpgaIOC")
+epicsEnvSet("EPICS_BASE","/root/epics/base")
+epicsEnvSet("ASYN","/root/epics/support/asyn")

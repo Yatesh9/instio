@@ -1,0 +1,97 @@
+record(ai, "Phase_set_FWD")
+{
+    field(DESC, "Phase_set_FWD")
+    field(DTYP, "INSTIO")
+    field(INP, "@0x41210000,0")
+    field(SCAN, "5 second")
+}
+
+record(ai, "Phase_Error_Threshold")
+{
+    field(DESC, "Phase_Error_Threshold")
+    field(DTYP, "INSTIO")
+    field(INP, "@0x41210000,8")
+    field(SCAN, "5 second")
+}
+
+record(ai, "saturation")
+{
+    field(DESC, "saturation")
+    field(DTYP, "INSTIO")
+    field(INP, "@0x41290000,8")
+    field(SCAN, "5 second")
+}
+
+record(ai, "pulse_control_frequency")
+{
+    field(DESC, "pulse_control_frequency")
+    field(DTYP, "INSTIO")
+    field(INP, "@0x41220000,0")
+    field(SCAN, "5 second")
+}
+
+
+
+record(ai, "set_SP_12MHz_Amp")
+{
+    field(DESC, "set_SP_12MHz_Amp")
+    field(DTYP, "INSTIO")
+    field(INP, "@0x41200000,0")
+    field(SCAN, "5 second")
+}
+
+record(ai, "set_SP_12MHz_Phase")
+{
+    field(DESC, "set_SP_12MHz_Phase")
+    field(DTYP, "INSTIO")
+    field(INP, "@0x41200000,8")
+    field(SCAN, "5 second")
+}
+
+record(ai, "Phase_Inc_DDS1")
+{
+    field(DESC, "Phase_Inc_DDS1")
+    field(DTYP, "INSTIO")
+    field(INP, "@0x41250000,0")
+    field(SCAN, "5 second")
+}
+
+record(ai, "Phase_Inc_DDS1")
+{
+    field(DESC, "Phase_Inc_DDS2")
+    field(DTYP, "INSTIO")
+    field(INP, "@0x41250000,8")
+    field(SCAN, "5 second")
+}
+
+record(ai, "set_Kp_12MHz_Amp")
+{
+    field(DESC, "set_Kp_12MHz_Amp")
+    field(DTYP, "INSTIO")
+    field(INP, "@0x41230000,0")
+    field(SCAN, "5 second")
+}
+
+record(ai, "set_Ki_12MHz_Amp")
+{
+    field(DESC, "set_Ki_12MHz_Amp")
+    field(DTYP, "INSTIO")
+    field(INP, "@0x41230000,8")
+    field(SCAN, "5 second")
+}
+
+record(ai, "set_Kp_12MHz_Phase")
+{
+    field(DESC, "set_Kp_12MHz_Phase")
+    field(DTYP, "INSTIO")
+    field(INP, "@0x41240000,0")
+    field(SCAN, "5 second")
+}
+
+record(ai, "set_Ki_12MHz_Phase")
+{
+    field(DESC, "set_Ki_12MHz_Phase")
+    field(DTYP, "INSTIO")
+    field(INP, "@0x41240000,8")
+    field(SCAN, "5 second")
+}

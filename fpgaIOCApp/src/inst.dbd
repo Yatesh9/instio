@@ -1,0 +1,7 @@
+# include "base.dbd"
+# local menu, record, device, driver, breakpoint definitions
+driver(drvVME)
+device(ao,INST_IO,instio_ao,"INSTIO_AO")
+device(ai,INST_IO,instio,"INSTIO")
+device(bi,INST_IO,instio_bi,"INSTIO_BI")
+device(bo,INST_IO,instio_bo,"INSTIO_BO")

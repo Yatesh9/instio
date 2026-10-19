@@ -1,0 +1,313 @@
+#undef DEBUG_ON
+
+/* System related include files */
+#include <math.h>
+#include <sys/types.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+
+/* EPICS system related include files */
+#include "alarm.h"
+#include "devLib.h"
+#include "devSup.h"
+#include "recGbl.h"
+#include "epicsPrint.h"
+#include "epicsExport.h"
+
+/* EPICS record processing related include files */
+#include "dbScan.h"
+#include "dbAccess.h"
+
+#include "biRecord.h"
+#include "boRecord.h"
+#include "aiRecord.h"
+#include "aoRecord.h"
+
+#include "cvtTable.h"
+#include "dbDefs.h"
+#include "recSup.h"
+#include "link.h"
+
+#include "devSup.h"
+#include "drvSup.h"
+
+#include <stdint.h>
+#include <sys/mman.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <inttypes.h>
+#define PORT 8080
+#define MAX_BUFFER_SIZE 1024
+//#include "devVME.h"
+
+
+
+/******************** variables ***********************/
+
+
+
+/* Forward references */
+static long init(int);
+
+static long init_vme();
+
+static long read_bi(biRecord*);
+static long init_bi_record(biRecord*);
+
+static long write_bo(boRecord*);
+static long init_bo_record(boRecord*);
+
+static long read_ai(aiRecord*);
+static long init_ai_record(aiRecord*);
+
+static long write_ao(aoRecord*);
+static long init_ao_record(aoRecord*);
+static void *ptr = NULL;
+static int fd = -1;
+/* Create the drvet for drvVME */
+static struct
+{
+   long	     number;
+   DRVSUPFUN report;
+   DRVSUPFUN init;
+} 
+drvVME = {2, NULL, init_vme};
+epicsExportAddress( drvet, drvVME);
+
+/* Create the dset for devBiVmivme2536 */
+static struct
+{
+   long      number;
+   DEVSUPFUN report;         /* used by dbior */
+   DEVSUPFUN init;           /* called 1 time before & after all records */
+   DEVSUPFUN init_record;    /* called 1 time for each record */
+   DEVSUPFUN get_ioint_info; /* used for COS processing */
+   DEVSUPFUN read_bi;        /* input command goes here */
+}
+instio_bi = {5, NULL, init, init_bi_record, NULL, read_bi};
+epicsExportAddress( dset, instio_bi );
+
+
+static struct
+{
+   long      number;
+   DEVSUPFUN report;          
+   DEVSUPFUN init;            
+   DEVSUPFUN init_record;     /* called once for each record */
+   DEVSUPFUN get_ioint_info;  
+   DEVSUPFUN write_bo;        /* to write value of PV */
+}
+instio_bo = {5, NULL, init, init_bo_record, NULL, write_bo};
+epicsExportAddress( dset, instio_bo );
+
+/* Create the dset for devAiVmivme3113 */
+static struct
+{
+   long      number;
+   DEVSUPFUN report;         /* used by dbior */
+   DEVSUPFUN init;           /* called 1 time before & after all records */
+   DEVSUPFUN init_record;    /* called 1 time for each record */
+   DEVSUPFUN get_ioint_info; /* used for COS processing */
+   DEVSUPFUN read_ai;        /* input command goes here */
+   DEVSUPFUN special_linconv;
+}
+devAiVmivme3113 = {6, NULL, init, init_ai_record, NULL, read_ai, NULL};
+epicsExportAddress( dset, devAiVmivme3113 );
+
+static struct
+{
+   long      number;
+   DEVSUPFUN report;         /* used by dbior */
+   DEVSUPFUN init;           /* called 1 time before & after all records */
+   DEVSUPFUN init_record;    /* called 1 time for each record */
+   DEVSUPFUN get_ioint_info; /* used for COS processing */
+   DEVSUPFUN read_ai;        /* input command goes here */
+   DEVSUPFUN special_linconv;
+}
+instio = {6, NULL, init, init_ai_record, NULL, read_ai, NULL};
+epicsExportAddress( dset, instio);
+
+/* Create the dset for devAoVmivmeDAC64 */
+static struct
+{
+   long      number;
+   DEVSUPFUN report;         /* used by dbior */
+   DEVSUPFUN init;           /* called 1 time before & after all records */
+   DEVSUPFUN init_record;    /* called 1 time for each record */
+   DEVSUPFUN get_ioint_info; /* used for COS processing */
+   DEVSUPFUN write_ao;        /* input command goes here */
+   DEVSUPFUN special_linconv;
+}
+instio_ao = {6, NULL, init, init_ao_record, NULL, write_ao, NULL};
+epicsExportAddress( dset, instio_ao );
+/************************************************************************/
+/* Bi Record								*/
+/************************************************************************/
+
+/* init_ai for debug */
+static long init(int after)
+{
+#ifdef DEBUG_ON 
+  printf("vmeio (init) called, pass=%d\n", after);
+#endif
+  return(0);
+} 
+
+
+static long init_vme()
+{
+/******************** vme cycle **********************/
+//-------------------------------------------------
+    fd = open("/dev/mem", O_RDWR | O_SYNC);
+    if (fd < 0) {
+        perror("Failed to open /dev/mem");
+        return -1;
+    }
+  printf("Calling gefVmeOpen\n");
+  return(0);
+}
+
+static long init_bi_record(struct biRecord *pbi)
+{
+#ifdef DEBUG_ON
+  printf("vmeio (init_bi_record) called\n");
+#endif
+  pbi->udf = FALSE;
+  return(0);
+}
+
+static long init_bo_record(struct boRecord *pbo)
+{
+#ifdef DEBUG_ON
+  printf("vmeio (init_bo_record) called\n");
+#endif
+  pbo->udf = FALSE;
+  return(0);
+}
+
+static long init_ai_record(struct aiRecord *pai)
+{
+    //return 0;
+  printf("vmeio (init_ai_record) called %s \n",pai->inp.value.instio.string);
+  pai->udf = FALSE;
+  return(0);
+}
+
+
+static long init_ao_record(struct aoRecord *pao)
+{
+  printf("vmeio (init_ao_record) called%s \n",pao->out.value.instio.string);
+  pao->udf = FALSE;
+  return(0);
+}
+
+
+static long read_bi(struct biRecord *pbi)
+{
+   char address_str[50], offset_str[5], bit_offset[1];
+     sscanf(pbi->inp.value.instio.string, "%49[^,],%49[^,],%49s", address_str, offset_str,bit_offset);
+//printf("%s \n", address_str);
+//printf("%s \n", name);
+//printf("%s \n", offset_str);
+ptr = mmap(NULL, sysconf(_SC_PAGESIZE), PROT_READ | PROT_WRITE, MAP_SHARED, fd, strtoul(address_str , NULL,16));
+    if (ptr == MAP_FAILED) {
+        perror("mmap failed");
+        close(fd);
+        fd = -1;
+        return -1;
+    }
+  printf("vmeio (read_bi) accessed %s\n",address_str);
+ //printf("%p \n", (void *)(ptr+atoi(offset_str)));
+  pbi->rval = (*((int8_t *)((ptr) + atoi(offset_str)))) & (1 << atoi(bit_offset));//(float)(10 * (data16[0] / 4096.000f));         // VME Data REA$  //pai->val = 77;
+
+  pbi->udf = FALSE;
+  munmap(ptr, sysconf(_SC_PAGESIZE));
+  printf("vmeio (read_bi) data %d\n", pbi->rval);
+  return(0);   
+}
+
+
+static long write_bo(struct boRecord *pbo)
+{   char address_str[50], offset_str[5], bit_offset[1];
+     sscanf(pbo->out.value.instio.string, "%49[^,],%49[^,],%49s", address_str, offset_str,bit_offset);
+//printf("%s \n", address_str);
+//printf("%s \n", name);
+//printf("%s \n", offset_str);
+ptr = mmap(NULL, sysconf(_SC_PAGESIZE), PROT_READ | PROT_WRITE, MAP_SHARED, fd, strtoul(address_str , NULL,16));
+    if (ptr == MAP_FAILED) {
+        perror("mmap failed");
+        close(fd);
+        fd = -1;
+        return -1;
+    }
+  printf("vmeio (write_bo) accessed\n");
+ printf("%p \n", (void *)(ptr+atoi(offset_str)));
+if(pbo->rval){*((int16_t *)(ptr + atoi(offset_str))) |= (1 << atoi(bit_offset));}
+else{*((int16_t *)(ptr + atoi(offset_str))) &= ~(1 << atoi(bit_offset));}
+// *((int16_t *)(ptr + atoi(offset_str))) = pbo->rval;
+  //6_t *)((ptr) + atoi(offset_str)))) & (1 << atoi(bit_offset));//(float)(10 * (data16[0] / 4096.000$
+
+  pbo->udf = FALSE;
+  munmap(ptr, sysconf(_SC_PAGESIZE));
+  printf("vmeio (write_bo) data %d\n", pbo->rval);
+
+  return(0);				/* convert */
+}
+
+
+static long read_ai(struct aiRecord *pai)
+{
+char address_str[50], offset_str[5];
+     sscanf(pai->inp.value.instio.string, "%49[^,],%49s", address_str, offset_str);
+printf("%s \n", address_str);
+//printf("%s \n", name);
+printf("%s \n", offset_str);
+ptr = mmap(NULL, sysconf(_SC_PAGESIZE), PROT_READ | PROT_WRITE, MAP_SHARED, fd, strtoul(address_str , NULL,16));
+    if (ptr == MAP_FAILED) {
+        perror("mmap failed");
+        close(fd);
+        fd = -1;
+        return -1;
+    }
+  //printf("vmeio (read_ai) accessed\n");
+ //printf("%p \n", (void *)(ptr+atoi(offset_str)));
+  pai->rval = *((int16_t *)((ptr) + atoi(offset_str)));//(float)(10 * (data16[0] / 4096.000f));		// VME Data READ	
+  //pai->val = 77;
+
+  pai->udf = FALSE;  
+  munmap(ptr, sysconf(_SC_PAGESIZE));
+  printf("vmeio (read_ai) data %d\n", pai->rval);
+  return(0);				/* convert */
+}
+
+
+static long write_ao(struct aoRecord *pao)
+{
+char address_str[50], offset_str[5];
+//    address_str = strtok(pai->inp.value.instio.string, ",");
+//    name = strtok(NULL, ",");
+//    offset_str = strtok(NULL, ",");
+     sscanf(pao->out.value.instio.string, "%49[^,],%49s", address_str, offset_str);
+      // Map the specified physical memory address
+    ptr = mmap(NULL, sysconf(_SC_PAGESIZE), PROT_READ | PROT_WRITE, MAP_SHARED, fd, strtoul(address_str , NULL,16));
+    if (ptr == MAP_FAILED) {
+        perror("mmap failed");
+        close(fd);
+        fd = -1;
+        return -1;
+    }
+
+    printf("Memory mapping successful at address: %p\n", ptr);
+*((int16_t *)(ptr + atoi(offset_str))) = pao->rval;
+  printf("vmeio (write_ao) accessed\n");
+
+  printf("vmeio (write_ao) data %d\n", pao->rval);
+munmap(ptr, sysconf(_SC_PAGESIZE));
+  return(0);				/* convert */
+}
+

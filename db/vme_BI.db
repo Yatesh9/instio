@@ -1,0 +1,47 @@
+record(bi,"integrator_reset") {
+	field(DTYP,"INSTIO_BI")
+	field(INP,"@0x41290000,0,0")
+	field(SCAN, "5 second")
+	field(ZNAM,"0")
+	field(ONAM,"1")
+}
+
+record(bi,"PSR") {
+	field(DTYP,"INSTIO_BI")
+	field(INP,"@0x41290000,0,3")
+	field(SCAN, "5 second")
+	field(ZNAM,"0")
+	field(ONAM,"1")
+}
+
+record(bi,"ISR") {
+	field(DTYP,"INSTIO_BI")
+	field(INP,"@0x41290000,0,6")
+	field(SCAN, "5 second")
+	field(ZNAM,"0")
+	field(ONAM,"1")
+}
+
+record(bi,"pulse_control_manual") {
+	field(DTYP,"INSTIO_BI")
+	field(INP,"@0x41220000,8,0")
+	field(SCAN, "5 second")
+	field(ZNAM,"0")
+	field(ONAM,"1")
+}
+
+record(bi,"pulse_control_move_in_closed_loop") {
+	field(DTYP,"INSTIO_BI")
+	field(INP,"@0x41290000,8,1")
+	field(SCAN, "5 second")
+	field(ZNAM,"0")
+	field(ONAM,"1")
+}
+
+record(bi,"loopSW") {
+	field(DTYP,"INSTIO_BI")
+	field(INP,"@0x41290000,0,0")
+	field(SCAN, "5 second")
+	field(ZNAM,"0")
+	field(ONAM,"1")
+}

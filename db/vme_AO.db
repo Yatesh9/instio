@@ -1,0 +1,14 @@
+record(ao, "testAO")
+{
+	field(DESC, "testAO")
+	field(DTYP, "INSTIO_AO")
+	field(OUT, "@0x41240000,0")
+}
+
+record(ao, "Phase_Error_RB")
+{
+	field(DESC, "testAO")
+	field(DTYP, "INSTIO_AO")
+	field(OUT, "@0x41260000,0")
+}
+

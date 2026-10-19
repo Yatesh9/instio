@@ -1,0 +1,3 @@
+include "xxxRecord.dbd"
+include "asyn.dbd"
+device(xxx,CONSTANT,devXxxSoft,"SoftChannel")
